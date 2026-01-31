@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+
+    --primary: 160 84% 39%; /* Neon Green/Cyan blend */
+    --primary-foreground: 144.9 80.4% 10%;
+
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+
+    --accent: 160 84% 39%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 160 84% 39%;
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  @apply bg-background/60 backdrop-blur-xl border border-white/10;
+}
+
+.glass-card {
+  @apply bg-card/40 backdrop-blur-md border border-white/5 shadow-xl;
+}
+
+/* Animations */
+@keyframes pulse-neon {
+  0%,
+  100% {
+    box-shadow:
+      0 0 5px theme("colors.primary.DEFAULT"),
+      0 0 10px theme("colors.primary.DEFAULT");
+  }
+  50% {
+    box-shadow:
+      0 0 2px theme("colors.primary.DEFAULT"),
+      0 0 5px theme("colors.primary.DEFAULT");
+  }
+}
+
+.animate-pulse-neon {
+  animation: pulse-neon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

@@ -1,0 +1,17 @@
+[package]
+name = "plexus-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+tracing-appender = "0.2"
+wasmtime = "41.0.1"
+
+[dev-dependencies]
+proptest = "1.0"

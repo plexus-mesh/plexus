@@ -1,0 +1,16 @@
+[package]
+name = "plexus-node"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+plexus-core = { path = "../plexus-core" }
+plexus-p2p = { path = "../plexus-p2p" }
+tokio.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+futures.workspace = true
+libp2p.workspace = true
+clap = { version = "4.4", features = ["derive"] }

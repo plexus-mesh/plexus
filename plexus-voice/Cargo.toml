@@ -1,0 +1,15 @@
+[package]
+name = "plexus-voice"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+cpal = "0.15"
+tokio = { version = "1.36", features = ["full"] }
+anyhow.workspace = true
+thiserror.workspace = true
+tracing = "0.1"
+# For buffer management
+ringbuf = "0.3"

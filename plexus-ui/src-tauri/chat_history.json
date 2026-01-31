@@ -1,0 +1,9 @@
+{
+  "messages": [
+    {
+      "role": "System",
+      "content": "You are a helpful AI assistant."
+    }
+  ],
+  "max_history": 10
+}

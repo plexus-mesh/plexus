@@ -1,0 +1,64 @@
+[workspace]
+resolver = "2"
+members = [
+    "plexus-core",
+    "plexus-p2p",
+    "plexus-ai",
+    "plexus-ui/src-tauri",
+    "plexus-node", 
+    "plexus-voice", "plexus-gateway",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Plexus-Mesh Team"]
+license = "MIT"
+description = "Decentralized AI Orchestration Layer. Transform your clusters into a private, offline-capable AI powerhouse."
+keywords = ["ai", "p2p", "mesh", "rust", "llm"]
+categories = ["science::robotics", "network-programming"]
+repository = "https://github.com/plexus-mesh/plexus-mesh"
+homepage = "https://plexus-mesh.com"
+documentation = "https://docs.plexus-mesh.com"
+
+[workspace.dependencies]
+plexus-core = { path = "plexus-core" }
+plexus-p2p = { path = "plexus-p2p" }
+plexus-ai = { path = "plexus-ai" }
+
+# Async & Runtime
+tokio = { version = "1.36", features = ["full"] }
+tokio-stream = "0.1"
+futures = "0.3"
+
+# Networking
+libp2p = { version = "0.53", features = ["gossipsub", "kad", "mdns", "noise", "yamux", "tcp", "tokio", "macros", "request-response", "cbor", "dcutr", "relay", "dns", "quic"] }
+libp2p-identity = "0.2"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Error Handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Logging & Tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Encryption & Utils
+rand = "0.8"
+sha2 = "0.10"
+base64 = "0.21"
+
+# UI
+tauri = { version = "2.0.0-beta", features = [] } # Placeholder version
+serde_wasm_bindgen = "0.6"
+
+[profile.release]
+lto = "thin"
+codegen-units = 16
+strip = true
+panic = "unwind"
+opt-level = 3
