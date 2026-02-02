@@ -36,14 +36,14 @@ jobs:
         uses: taiki-e/install-action@cargo-llvm-cov
 
       - name: Run Tests & Coverage
-        run: cargo llvm-cov --workspace --lcov --output-path lcov.info
+        run: cargo llvm-cov --workspace --html
 
-      - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: lcov.info
-          fail_ci_if_error: false
+          name: coverage-report
+          path: target/llvm-cov/html/
+          if-no-files-found: error
 
   frontend-e2e:
     name: Frontend E2E (Playwright)

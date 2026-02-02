@@ -12,7 +12,11 @@ async fn create_node(name: &str) -> (Swarm<PlexusBehaviour>, PeerId) {
     let id_store = IdentityStore::new(std::env::temp_dir().join(format!("{}.key", name)));
     let kp = id_store.load_or_generate().unwrap();
     let peer_id = kp.public().to_peer_id();
-    let swarm = build_swarm(kp).await.unwrap();
+    let mut swarm = build_swarm(kp).await.unwrap();
+    swarm
+        .behaviour_mut()
+        .kademlia
+        .set_mode(Some(libp2p::kad::Mode::Server));
     (swarm, peer_id)
 }
 
@@ -64,7 +68,8 @@ async fn test_dht_partition_and_sync() {
                                         phase = 3;
                                     }
                                     libp2p::kad::QueryResult::PutRecord(Err(e)) => {
-                                        println!("Alice PUT failed: {:?}", e);
+                                        println!("Alice PUT failed: {:?}. Retrying...", e);
+                                        phase = 2; // Retry
                                     }
                                     libp2p::kad::QueryResult::Bootstrap(Ok(_)) => {
                                          println!("Alice Bootstrap successful! Starting PUT...");
@@ -77,13 +82,6 @@ async fn test_dht_partition_and_sync() {
                                             publisher: None,
                                             expires: None,
                                         };
-                                        // We need to access Alice here. But we are in a match block of an event.
-                                        // We cannot borrow `alice` mutably if we are iterating `alice.select_next_some()`.
-                                        // Wait, `select_next_some` consumes the event. The stream is borrowed.
-                                        // We can't call `alice.behaviour_mut()` inside the `select!` match for alice?
-                                        // Actually `select!` allows separate mutable borrows if structure permits.
-                                        // But `alice` is the swarm.
-
                                         // Workaround: Set a flag `ready_to_put = true` and handle it in the timeout/tick loop or check `phase` at top of loop.
                                     }
                                     _ => {}
@@ -193,7 +191,7 @@ async fn test_dht_partition_and_sync() {
                            expires: None,
                        };
                        alice.behaviour_mut().kademlia.put_record(record, Quorum::One).unwrap();
-                       phase = 3; // Move to Partition immediately after PUT initiated
+                       phase = 22; // Waiting for Put Success
                     }
                     3 => {
                          // PARTITION: Simulate Bob going offline
