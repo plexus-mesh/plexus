@@ -14,9 +14,11 @@ use libp2p::{
     swarm::SwarmEvent,
     Swarm,
 };
+#[cfg(feature = "lancedb")]
+use plexus_ai::LanceDbStore;
 use plexus_ai::{
-    voice::WhisperEngine, BertEmbedder, ChatHistory, LLMEngine, LanceDbStore, QdrantStore,
-    SimpleVectorStore, TinyLlamaEngine, VectorStore,
+    voice::WhisperEngine, BertEmbedder, ChatHistory, LLMEngine, QdrantStore, SimpleVectorStore,
+    TinyLlamaEngine, VectorStore,
 };
 use std::collections::HashMap; // Use HashMap instead of CRDTs
 use std::path::PathBuf;
@@ -193,33 +195,49 @@ impl NodeService {
                 }
                 Ok(Err(e)) => {
                     error!(
-                        "Failed to connect to Qdrant ({}). Falling back to LanceDB.",
+                        "Failed to connect to Qdrant ({}). Falling back to Embedded Store.",
                         e
                     );
-                    let lance_path = app_data_dir.join("vectors.lance");
-                    match LanceDbStore::new(&lance_path).await {
-                        Ok(store) => {
-                            info!("Connected to Embedded LanceDB at {:?}", lance_path);
-                            Arc::new(store)
+                    #[cfg(feature = "lancedb")]
+                    {
+                        let lance_path = app_data_dir.join("vectors.lance");
+                        match LanceDbStore::new(&lance_path).await {
+                            Ok(store) => {
+                                info!("Connected to Embedded LanceDB at {:?}", lance_path);
+                                Arc::new(store)
+                            }
+                            Err(e) => {
+                                error!("Failed to init LanceDB: {}. Falling back to In-Memory.", e);
+                                Arc::new(SimpleVectorStore::new())
+                            }
                         }
-                        Err(e) => {
-                            error!("Failed to init LanceDB: {}. Falling back to In-Memory.", e);
-                            Arc::new(SimpleVectorStore::new())
-                        }
+                    }
+                    #[cfg(not(feature = "lancedb"))]
+                    {
+                        info!("LanceDB disabled. Falling back to In-Memory SimpleVectorStore.");
+                        Arc::new(SimpleVectorStore::new())
                     }
                 }
                 Err(_) => {
-                    error!("Qdrant connection timed out. Falling back to LanceDB.");
-                    let lance_path = app_data_dir.join("vectors.lance");
-                    match LanceDbStore::new(&lance_path).await {
-                        Ok(store) => {
-                            info!("Connected to Embedded LanceDB at {:?}", lance_path);
-                            Arc::new(store)
+                    error!("Qdrant connection timed out. Falling back to Embedded Store.");
+                    #[cfg(feature = "lancedb")]
+                    {
+                        let lance_path = app_data_dir.join("vectors.lance");
+                        match LanceDbStore::new(&lance_path).await {
+                            Ok(store) => {
+                                info!("Connected to Embedded LanceDB at {:?}", lance_path);
+                                Arc::new(store)
+                            }
+                            Err(e) => {
+                                error!("Failed to init LanceDB: {}. Falling back to In-Memory.", e);
+                                Arc::new(SimpleVectorStore::new())
+                            }
                         }
-                        Err(e) => {
-                            error!("Failed to init LanceDB: {}. Falling back to In-Memory.", e);
-                            Arc::new(SimpleVectorStore::new())
-                        }
+                    }
+                    #[cfg(not(feature = "lancedb"))]
+                    {
+                        info!("LanceDB disabled. Falling back to In-Memory SimpleVectorStore.");
+                        Arc::new(SimpleVectorStore::new())
                     }
                 }
             };

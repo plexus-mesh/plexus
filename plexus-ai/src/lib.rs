@@ -1,7 +1,9 @@
 mod engine;
+#[cfg(feature = "lancedb")]
 mod lance_store;
 mod memory;
 pub use engine::TinyLlamaEngine;
+#[cfg(feature = "lancedb")]
 pub use lance_store::LanceDbStore;
 pub use memory::{BertEmbedder, QdrantStore, SimpleVectorStore};
 pub mod chat;

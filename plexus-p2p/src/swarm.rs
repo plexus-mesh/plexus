@@ -4,9 +4,7 @@ use libp2p::{
     core::Transport,
     gossipsub,
     identity::Keypair,
-    kad, mdns,
-    multiaddr::Protocol,
-    noise,
+    kad, mdns, noise,
     request_response::{self, cbor, ProtocolSupport},
     swarm::NetworkBehaviour,
     tcp, yamux, StreamProtocol, Swarm,
@@ -48,7 +46,7 @@ pub async fn build_swarm(keypair: Keypair) -> Result<Swarm<PlexusBehaviour>> {
 
     // Request-Response config
     let mut rr_config = request_response::Config::default();
-    rr_config.set_request_timeout(Duration::from_secs(300)); // 5 minutes for slow CPU inference
+    rr_config.set_request_timeout(Duration::from_secs(300));
 
     let request_response = cbor::Behaviour::new(
         [(

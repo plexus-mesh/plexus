@@ -23,6 +23,10 @@ sled = "0.34"
 directories-next = "2.0"
 uuid = { version = "1.20.0", features = ["v4"] }
 
+[features]
+default = ["lancedb"]
+lancedb = ["plexus-ai/lancedb"]
+
 [dev-dependencies]
 proptest = "1.0"
 tempfile = "3.24.0"
